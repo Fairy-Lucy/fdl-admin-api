@@ -1,4 +1,5 @@
-// Ajouter un lieu
+const apiBase = '';
+
 async function ajouterLieu() {
     const nom = document.getElementById('lieu-nom').value;
     try {
@@ -18,7 +19,6 @@ async function ajouterLieu() {
     }
 }
 
-// Ajouter un mot-clé
 async function ajouterMotCle() {
     const libelle = document.getElementById('mot-cle').value;
     try {
@@ -38,7 +38,6 @@ async function ajouterMotCle() {
     }
 }
 
-// Ajouter une image
 async function ajouterImage() {
     const uri = document.getElementById('image-uri').value;
     const description = document.getElementById('image-description').value;
@@ -56,7 +55,6 @@ async function ajouterImage() {
         }
         const image = await res.json();
 
-        // Associer l'image aux lieux et mots-clés
         await associerImageLieux(image.id, lieux);
         await associerImageMotsCles(image.id, motsCles);
 
@@ -67,7 +65,6 @@ async function ajouterImage() {
     }
 }
 
-// Associer l'image aux lieux
 async function associerImageLieux(imageId, lieux) {
     const lieuxRes = await fetch(`${apiBase}/lieux`);
     const lieuxData = await lieuxRes.json();
