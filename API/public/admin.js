@@ -1,101 +1,106 @@
-const apiBase = '';
-
 // Ajouter un lieu
 async function ajouterLieu() {
     const nom = document.getElementById('lieu-nom').value;
-    const res = await fetch(`${apiBase}/lieux`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nom })
-    });
-    const data = await res.json();
-    afficherMessage(`Lieu ajouté : ${data.nom}`);
+    try {
+        const res = await fetch(`${apiBase}/lieux`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nom })
+        });
+        if (!res.ok) {
+            throw new Error('Erreur lors de l\'ajout du lieu');
+        }
+        const data = await res.json();
+        afficherMessage(`Lieu ajouté : ${data.nom}`);
+    } catch (error) {
+        console.error('Erreur:', error);
+        afficherMessage(`Erreur lors de l'ajout du lieu: ${error.message}`);
+    }
 }
 
 // Ajouter un mot-clé
 async function ajouterMotCle() {
     const libelle = document.getElementById('mot-cle').value;
-    const res = await fetch(`${apiBase}/motscles`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ libelle })
-    });
-    const data = await res.json();
-    afficherMessage(`Mot-clé ajouté : ${data.libelle}`);
+    try {
+        const res = await fetch(`${apiBase}/motscles`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ libelle })
+        });
+        if (!res.ok) {
+            throw new Error('Erreur lors de l\'ajout du mot-clé');
+        }
+        const data = await res.json();
+        afficherMessage(`Mot-clé ajouté : ${data.libelle}`);
+    } catch (error) {
+        console.error('Erreur:', error);
+        afficherMessage(`Erreur lors de l'ajout du mot-clé: ${error.message}`);
+    }
 }
 
-// Ajouter une image et ses associations
+// Ajouter une image
 async function ajouterImage() {
     const uri = document.getElementById('image-uri').value;
     const description = document.getElementById('image-description').value;
     const lieux = document.getElementById('lieux-associes').value.split(',').map(l => l.trim());
     const motsCles = document.getElementById('mots-cles-associes').value.split(',').map(m => m.trim());
 
-    // Création de l'image
-    const res = await fetch(`${apiBase}/images`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uri, description })
-    });
+    try {
+        const res = await fetch(`${apiBase}/images`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uri, description })
+        });
+        if (!res.ok) {
+            throw new Error('Erreur lors de l\'ajout de l\'image');
+        }
+        const image = await res.json();
 
-    const image = await res.json();
+        // Associer l'image aux lieux et mots-clés
+        await associerImageLieux(image.id, lieux);
+        await associerImageMotsCles(image.id, motsCles);
 
-    // Récupérer tous les lieux et mots-clés pour association
+        afficherMessage('Image ajoutée avec ses associations.');
+    } catch (error) {
+        console.error('Erreur:', error);
+        afficherMessage(`Erreur lors de l'ajout de l'image: ${error.message}`);
+    }
+}
+
+// Associer l'image aux lieux
+async function associerImageLieux(imageId, lieux) {
     const lieuxRes = await fetch(`${apiBase}/lieux`);
     const lieuxData = await lieuxRes.json();
 
-    const motsRes = await fetch(`${apiBase}/motscles`);
-    const motsData = await motsRes.json();
-
-    // Associer l’image aux lieux
     for (const nom of lieux) {
         const lieu = lieuxData.find(l => l.nom.toLowerCase() === nom.toLowerCase());
         if (lieu) {
             await fetch(`${apiBase}/associer/image-lieu`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ lieu_id: lieu.id, image_id: image.id })
+                body: JSON.stringify({ lieu_id: lieu.id, image_id: imageId })
             });
         } else {
             console.warn(`Lieu non trouvé : ${nom}`);
         }
     }
+}
 
-    // Associer l’image aux mots-clés
+// Associer l'image aux mots-clés
+async function associerImageMotsCles(imageId, motsCles) {
+    const motsRes = await fetch(`${apiBase}/motscles`);
+    const motsData = await motsRes.json();
+
     for (const mot of motsCles) {
         const motCle = motsData.find(m => m.libelle.toLowerCase() === mot.toLowerCase());
         if (motCle) {
             await fetch(`${apiBase}/associer/image-motcle`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ image_id: image.id, mot_cle_id: motCle.id })
+                body: JSON.stringify({ image_id: imageId, mot_cle_id: motCle.id })
             });
         } else {
             console.warn(`Mot-clé non trouvé : ${mot}`);
         }
-    }
-
-    afficherMessage('Image ajoutée avec ses associations.');
-}
-
-// Afficher un message à l'admin
-function afficherMessage(msg) {
-    document.getElementById('message').innerText = msg;
-}
-async function afficherContenuBDD() {
-    try {
-        const response = await fetch('http://votre-api/lieux'); // Remplacez par l'URL de votre API
-        const data = await response.json();
-
-        const contenuBDD = document.getElementById('contenu-bdd');
-        contenuBDD.innerHTML = '<h3>Lieux</h3><table><tr><th>ID</th><th>Nom</th></tr>' +
-            data.map(lieu => `<tr><td>${lieu.id}</td><td>${lieu.nom}</td></tr>`).join('') +
-            '</table>';
-
-        // Ajoutez d'autres appels pour afficher les images et les mots-clés si nécessaire
-    } catch (error) {
-        console.error('Erreur lors de la récupération des données:', error);
-        document.getElementById('message').innerHTML = 'Erreur lors de la récupération des données.';
-        document.getElementById('message').className = 'message error';
     }
 }
