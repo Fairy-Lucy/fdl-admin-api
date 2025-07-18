@@ -19,7 +19,7 @@
 </section>
 <section class="form-section">
     <h2>Ajouter une image</h2>
-    <input type="text" id="image-uri" placeholder="URI de l'image" class="form-input">
+    <input type="file" id="image-file" accept="image/*" class="form-input">
     <textarea id="image-description" placeholder="Description" class="form-input"></textarea>
     <label class="form-label">Associer à des lieux (séparés par virgule)</label>
     <input type="text" id="lieux-associes" placeholder="ex: Paris, Lyon" class="form-input">
@@ -27,13 +27,11 @@
     <input type="text" id="mots-cles-associes" placeholder="ex: France, Artillerie" class="form-input">
     <button class="form-button" onclick="ajouterImage()">Ajouter</button>
 </section>
-
 <section class="form-section">
     <h2>Contenu de la Base de Données</h2>
     <button class="form-button" onclick="afficherContenuBDD()">Afficher le contenu</button>
     <div id="contenu-bdd"></div>
 </section>
-
 <div id="message" class="message"></div>
 <script src="admin.js"></script>
 </body>

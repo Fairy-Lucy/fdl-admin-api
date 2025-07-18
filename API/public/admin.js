@@ -39,31 +39,41 @@ async function ajouterMotCle() {
 }
 
 async function ajouterImage() {
-    const uri = document.getElementById('image-uri').value;
+    const fileInput = document.getElementById('image-file');
     const description = document.getElementById('image-description').value;
     const lieux = document.getElementById('lieux-associes').value.split(',').map(l => l.trim());
     const motsCles = document.getElementById('mots-cles-associes').value.split(',').map(m => m.trim());
 
-    try {
-        const res = await fetch(`${apiBase}/images`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ uri, description })
-        });
-        if (!res.ok) {
-            throw new Error('Erreur lors de l\'ajout de l\'image');
-        }
-        const image = await res.json();
+    if (fileInput.files.length === 0) {
+        afficherMessage('Veuillez sélectionner une image.');
+        return;
+    }
 
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('description', description);
+
+    try {
+        const res = await fetch(`${apiBase}/upload`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!res.ok) {
+            throw new Error('Erreur lors de l\'upload de l\'image');
+        }
+
+        const image = await res.json();
         await associerImageLieux(image.id, lieux);
         await associerImageMotsCles(image.id, motsCles);
-
         afficherMessage('Image ajoutée avec ses associations.');
     } catch (error) {
         console.error('Erreur:', error);
         afficherMessage(`Erreur lors de l'ajout de l'image: ${error.message}`);
     }
 }
+
 
 async function associerImageLieux(imageId, lieux) {
     const lieuxRes = await fetch(`${apiBase}/lieux`);
