@@ -1,31 +1,29 @@
-// controller/documentsController.js
-const pool = require('../model/db');
+const db = require('../model/db');
 
-const getAllDocuments = async (req, res) => {
+exports.getAllDocuments = async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM document');
-        res.json(result.rows);
+        const documents = await db.all('SELECT * FROM document');
+        res.json(documents);
     } catch (err) {
-        console.error('Erreur lors de la récupération des documents :', err);
-        res.sendStatus(500);
+        console.error(err);
+        res.status(500).json({ error: 'Erreur interne' });
     }
 };
 
-const createDocument = async (req, res) => {
+exports.createDocument = async (req, res) => {
     const { titre, uri, theme } = req.body;
+    if (!titre || !uri || !theme) {
+        return res.status(400).json({ error: 'Champs manquants' });
+    }
+
     try {
-        const result = await pool.query(
-            'INSERT INTO document (titre, uri, theme) VALUES ($1, $2, $3) RETURNING *',
+        const result = await db.run(
+            'INSERT INTO document (titre, uri, theme) VALUES (?, ?, ?)',
             [titre, uri, theme]
         );
-        res.json(result.rows[0]);
+        res.json({ id: result.lastID, titre, uri, theme });
     } catch (err) {
-        console.error('Erreur lors de la création du document :', err);
-        res.sendStatus(500);
+        console.error(err);
+        res.status(500).json({ error: 'Erreur interne' });
     }
-};
-
-module.exports = {
-    getAllDocuments,
-    createDocument,
 };

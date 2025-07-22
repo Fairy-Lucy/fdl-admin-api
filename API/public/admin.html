@@ -28,6 +28,15 @@
     <button class="form-button" onclick="ajouterImage()">Ajouter</button>
 </section>
 <section class="form-section">
+    <h2>Ajouter un document PDF</h2>
+    <input type="text" id="document-titre" placeholder="Titre du document" class="form-input">
+    <input type="text" id="document-theme" placeholder="Thème (ex: Réunion)" class="form-input">
+    <input type="file" id="document-file" accept="application/pdf" class="form-input">
+    <button class="form-button" onclick="ajouterDocument()">Ajouter le document</button>
+</section>
+
+
+<section class="form-section">
     <h2>Contenu de la Base de Données</h2>
     <button class="form-button" onclick="afficherContenuBDD()">Afficher le contenu</button>
     <div id="contenu-bdd"></div>
