@@ -1,3 +1,4 @@
+// controllers/lieuxController.js
 const pool = require('../model/db');
 
 const getAllLieux = async (req, res) => {
@@ -24,7 +25,19 @@ const createLieu = async (req, res) => {
     }
 };
 
+const deleteLieu = async (req, res) => {
+    const { nom } = req.params;
+    try {
+        await pool.query('DELETE FROM lieux WHERE nom = $1', [nom]);
+        res.sendStatus(200);
+    } catch (err) {
+        console.error('Erreur lors de la suppression du lieu :', err);
+        res.sendStatus(500);
+    }
+};
+
 module.exports = {
     getAllLieux,
     createLieu,
+    deleteLieu
 };

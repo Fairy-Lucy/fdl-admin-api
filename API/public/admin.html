@@ -13,19 +13,34 @@
     <button class="form-button" onclick="ajouterLieu()">Ajouter</button>
 </section>
 <section class="form-section">
+    <h2>Supprimer un lieu</h2>
+    <input type="text" id="lieu-nom-supprimer" placeholder="Nom du lieu à supprimer" class="form-input">
+    <button class="form-button" onclick="supprimerLieu()">Supprimer</button>
+</section>
+<section class="form-section">
     <h2>Ajouter un mot-clé</h2>
     <input type="text" id="mot-cle" placeholder="Mot-clé" class="form-input">
     <button class="form-button" onclick="ajouterMotCle()">Ajouter</button>
 </section>
 <section class="form-section">
+    <h2>Supprimer un mot-clé</h2>
+    <input type="text" id="mot-cle-supprimer" placeholder="Mot-clé à supprimer" class="form-input">
+    <button class="form-button" onclick="supprimerMotCle()">Supprimer</button>
+</section>
+<section class="form-section">
     <h2>Ajouter une image</h2>
     <input type="file" id="image-file" accept="image/*" class="form-input">
     <textarea id="image-description" placeholder="Description" class="form-input"></textarea>
-    <label class="form-label">Associer à des lieux (séparés par virgule)</label>
+    <label class="form-label">Associer à des lieux de la <visite></visite>(séparés par virgule)</label>
     <input type="text" id="lieux-associes" placeholder="ex: Paris, Lyon" class="form-input">
     <label class="form-label">Associer à des mots-clés (séparés par virgule)</label>
     <input type="text" id="mots-cles-associes" placeholder="ex: France, Artillerie" class="form-input">
     <button class="form-button" onclick="ajouterImage()">Ajouter</button>
+</section>
+<section class="form-section">
+    <h2>Supprimer une image</h2>
+    <input type="text" id="image-nom-supprimer" placeholder="Nom de l'image à supprimer" class="form-input">
+    <button class="form-button" onclick="supprimerImage()">Supprimer</button>
 </section>
 <section class="form-section">
     <h2>Ajouter un document PDF</h2>
@@ -34,8 +49,11 @@
     <input type="file" id="document-file" accept="application/pdf" class="form-input">
     <button class="form-button" onclick="ajouterDocument()">Ajouter le document</button>
 </section>
-
-
+<section class="form-section">
+    <h2>Supprimer un document</h2>
+    <input type="text" id="document-titre-supprimer" placeholder="Titre du document à supprimer" class="form-input">
+    <button class="form-button" onclick="supprimerDocument()">Supprimer</button>
+</section>
 <section class="form-section">
     <h2>Contenu de la Base de Données</h2>
     <button class="form-button" onclick="afficherContenuBDD()">Afficher le contenu</button>

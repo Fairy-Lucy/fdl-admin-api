@@ -5,6 +5,7 @@ const fs = require('fs');
 const pool = require('./model/db');
 const app = express();
 const port = 3000;
+const os = require('os');
 
 function ensureDir(dir) {
     if (!fs.existsSync(dir)) {
@@ -14,7 +15,7 @@ function ensureDir(dir) {
 
 const imageStorage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const uploadDir = 'uploads/drawable/';
+        const uploadDir = 'android_asset/drawable-mdpi/';
         ensureDir(uploadDir);
         cb(null, uploadDir);
     },
@@ -25,7 +26,7 @@ const imageStorage = multer.diskStorage({
 
 const documentStorage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const uploadDir = 'uploads/documents/';
+        const uploadDir = 'android_asset/documentation/';
         ensureDir(uploadDir);
         cb(null, uploadDir);
     },
@@ -53,7 +54,7 @@ app.use('/motscles', motsClesRoutes);
 app.use('/themes', themesRoutes);
 app.use('/documents', documentsRoutes);
 
-app.post('/upload', uploadImage.single('image'), async (req, res) => {
+app.post('/android_asset/drawable-mdpi', uploadImage.single('image'), async (req, res) => {
     try {
         const { description } = req.body;
         const { file } = req;
@@ -72,7 +73,7 @@ app.post('/upload', uploadImage.single('image'), async (req, res) => {
     }
 });
 
-app.post('/upload/document', uploadDocument.single('document'), async (req, res) => {
+app.post('/android_asset/documentation', uploadDocument.single('document'), async (req, res) => {
     try {
         const { theme, titre } = req.body;
         const { file } = req;
@@ -91,6 +92,22 @@ app.post('/upload/document', uploadDocument.single('document'), async (req, res)
     }
 });
 
+
+function getLocalIPAddress() {
+    const interfaces = os.networkInterfaces();
+    for (const iface of Object.values(interfaces)) {
+        for (const config of iface) {
+            if (config.family === 'IPv4' && !config.internal) {
+                return config.address;
+            }
+        }
+    }
+    return 'localhost';
+}
+
+const ip = getLocalIPAddress();
+
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Serveur lancé sur http://0.0.0.0:${port}`);
+    console.log(`Serveur lancé sur http://${ip}:${port}`);
+    console.log(`Accédez à l'interface d'administration sur http://${ip}:${port}/admin.html`);
 });

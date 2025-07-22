@@ -1,29 +1,43 @@
-const db = require('../model/db');
+// controllers/documentsController.js
+const pool = require('../model/db');
 
-exports.getAllDocuments = async (req, res) => {
+const getAllDocuments = async (req, res) => {
     try {
-        const documents = await db.all('SELECT * FROM document');
-        res.json(documents);
+        const result = await pool.query('SELECT * FROM documents');
+        res.json(result.rows);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Erreur interne' });
+        console.error('Erreur lors de la récupération des documents :', err);
+        res.sendStatus(500);
     }
 };
 
-exports.createDocument = async (req, res) => {
+const createDocument = async (req, res) => {
     const { titre, uri, theme } = req.body;
-    if (!titre || !uri || !theme) {
-        return res.status(400).json({ error: 'Champs manquants' });
-    }
-
     try {
-        const result = await db.run(
-            'INSERT INTO document (titre, uri, theme) VALUES (?, ?, ?)',
+        const result = await pool.query(
+            'INSERT INTO documents (titre, uri, theme) VALUES ($1, $2, $3) RETURNING *',
             [titre, uri, theme]
         );
-        res.json({ id: result.lastID, titre, uri, theme });
+        res.json(result.rows[0]);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Erreur interne' });
+        console.error('Erreur lors de la création du document :', err);
+        res.sendStatus(500);
     }
+};
+
+const deleteDocument = async (req, res) => {
+    const { titre } = req.params;
+    try {
+        await pool.query('DELETE FROM documents WHERE titre = $1', [titre]);
+        res.sendStatus(200);
+    } catch (err) {
+        console.error('Erreur lors de la suppression du document :', err);
+        res.sendStatus(500);
+    }
+};
+
+module.exports = {
+    getAllDocuments,
+    createDocument,
+    deleteDocument
 };

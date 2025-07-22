@@ -1,24 +1,12 @@
+// controllers/imagesController.js
 const pool = require('../model/db');
 
-const getAllImagesWithDetails = async (req, res) => {
+const getAllImages = async (req, res) => {
     try {
-        const result = await pool.query(`
-      SELECT 
-        i.id AS image_id,
-        i.uri,
-        i.description,
-        ARRAY_AGG(DISTINCT l.nom) AS lieux,
-        ARRAY_AGG(DISTINCT m.libelle) AS mots_cles
-      FROM images i
-      LEFT JOIN lieux_images li ON i.id = li.image_id
-      LEFT JOIN lieux l ON li.lieu_id = l.id
-      LEFT JOIN images_mots_cles imc ON i.id = imc.image_id
-      LEFT JOIN mots_cles m ON imc.mot_cle_id = m.id
-      GROUP BY i.id
-    `);
+        const result = await pool.query('SELECT * FROM images');
         res.json(result.rows);
     } catch (err) {
-        console.error('Erreur lors de la récupération des images détaillées :', err);
+        console.error('Erreur lors de la récupération des images :', err);
         res.sendStatus(500);
     }
 };
@@ -37,7 +25,19 @@ const createImage = async (req, res) => {
     }
 };
 
+const deleteImage = async (req, res) => {
+    const { nom } = req.params;
+    try {
+        await pool.query('DELETE FROM images WHERE uri = $1', [nom]);
+        res.sendStatus(200);
+    } catch (err) {
+        console.error('Erreur lors de la suppression de l\'image :', err);
+        res.sendStatus(500);
+    }
+};
+
 module.exports = {
-    getAllImagesWithDetails,
+    getAllImages,
     createImage,
+    deleteImage
 };

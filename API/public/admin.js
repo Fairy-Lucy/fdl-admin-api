@@ -61,7 +61,7 @@ async function ajouterImage() {
     formData.append('description', description);
 
     try {
-        const res = await fetch(`${apiBase}/upload`, {
+        const res = await fetch(`${apiBase}/android_asset/drawable-mdpi`, {
             method: 'POST',
             body: formData
         });
@@ -157,7 +157,7 @@ async function ajouterDocument() {
     formData.append('theme', theme);
 
     try {
-        const res = await fetch(`${apiBase}/upload/document`, {
+        const res = await fetch(`${apiBase}/android_asset/documentation`, {
             method: 'POST',
             body: formData
         });
@@ -172,6 +172,81 @@ async function ajouterDocument() {
     } catch (error) {
         console.error('Erreur:', error);
         afficherMessage(`Erreur lors de l'ajout du document: ${error.message}`, 'error');
+    }
+}
+async function supprimerLieu() {
+    const nom = document.getElementById('lieu-nom-supprimer').value.trim();
+    if (!nom) {
+        afficherMessage("Le nom du lieu ne peut pas être vide.", "error", "lieu-nom-supprimer");
+        return;
+    }
+    try {
+        const res = await fetch(`${apiBase}/lieux/${encodeURIComponent(nom)}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Erreur lors de la suppression du lieu');
+        afficherMessage(`Lieu supprimé : ${nom}`, "success", "lieu-nom-supprimer");
+        document.getElementById('lieu-nom-supprimer').value = '';
+    } catch (error) {
+        console.error('Erreur:', error);
+        afficherMessage(`Erreur lors de la suppression du lieu: ${error.message}`, "error", "lieu-nom-supprimer");
+    }
+}
+
+async function supprimerMotCle() {
+    const libelle = document.getElementById('mot-cle-supprimer').value.trim();
+    if (!libelle) {
+        afficherMessage("Le mot-clé ne peut pas être vide.", "error", "mot-cle-supprimer");
+        return;
+    }
+    try {
+        const res = await fetch(`${apiBase}/motscles/${encodeURIComponent(libelle)}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Erreur lors de la suppression du mot-clé');
+        afficherMessage(`Mot-clé supprimé : ${libelle}`, "success", "mot-cle-supprimer");
+        document.getElementById('mot-cle-supprimer').value = '';
+    } catch (error) {
+        console.error('Erreur:', error);
+        afficherMessage(`Erreur lors de la suppression du mot-clé: ${error.message}`, "error", "mot-cle-supprimer");
+    }
+}
+
+async function supprimerImage() {
+    const nom = document.getElementById('image-nom-supprimer').value.trim();
+    if (!nom) {
+        afficherMessage("Le nom de l'image ne peut pas être vide.", "error", "image-nom-supprimer");
+        return;
+    }
+    try {
+        const res = await fetch(`${apiBase}/images/${encodeURIComponent(nom)}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Erreur lors de la suppression de l\'image');
+        afficherMessage(`Image supprimée : ${nom}`, "success", "image-nom-supprimer");
+        document.getElementById('image-nom-supprimer').value = '';
+    } catch (error) {
+        console.error('Erreur:', error);
+        afficherMessage(`Erreur lors de la suppression de l'image: ${error.message}`, "error", "image-nom-supprimer");
+    }
+}
+
+async function supprimerDocument() {
+    const titre = document.getElementById('document-titre-supprimer').value.trim();
+    if (!titre) {
+        afficherMessage("Le titre du document ne peut pas être vide.", "error", "document-titre-supprimer");
+        return;
+    }
+    try {
+        const res = await fetch(`${apiBase}/documents/${encodeURIComponent(titre)}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Erreur lors de la suppression du document');
+        afficherMessage(`Document supprimé : ${titre}`, "success", "document-titre-supprimer");
+        document.getElementById('document-titre-supprimer').value = '';
+    } catch (error) {
+        console.error('Erreur:', error);
+        afficherMessage(`Erreur lors de la suppression du document: ${error.message}`, "error", "document-titre-supprimer");
     }
 }
 
